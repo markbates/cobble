@@ -4,7 +4,7 @@ class Cobble
   attr_accessor :factories
   attr_accessor :attributes
   
-  def initialize
+  def initialize # :nodoc:
     self.reset!
   end
   

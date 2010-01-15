@@ -1,8 +1,8 @@
 class Cobble
-  module Errors
+  module Errors # :nodoc:
     class NoFakeRegistered < StandardError
       
-      def initialize(name)
+      def initialize(name) # :nodoc:
         super("No fake has been registered for '#{name}'!")
       end
       

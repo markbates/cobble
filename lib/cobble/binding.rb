@@ -4,7 +4,7 @@ class Cobble
     attr_accessor :type
     attr_accessor :options
   
-    def initialize(name, options = {})
+    def initialize(name, options = {}) # :nodoc:
       self.name = name
       self.type = :build
       self.options = {}
