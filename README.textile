@@ -1,0 +1,80 @@
+h1. Cobble
+
+A very simple and easy library to help facilitate the building and creating of objects. They can be any type of objects, although if you want to 'persist' them they need to respond to <code>.save!</code>. Cobble is there to put YOU in charge of how your objects get created. There's very little magic, it's just there to help make your life a little bit easier.
+
+h2. Examples:
+
+h3. Defining Attributes:
+
+Attributes can be defined to be used later in your cobblers, or they can be used on their own for other use.
+
+<pre><code>
+  Cobble.define_attributes(:user, :name => 'Mark Bates')
+  Cobble.define_attributes(:another_user, :attributes_for => :user, :email => lambda{fake(:email)})
+  Cobble.define_attributes(:yet_another_user, :attributes_for => :user, :email => lambda{rand})
+  
+  # Test:
+  Cobble.attributes_for(:user).should == {:name => 'Mark Bates'}
+  Cobble.attributes_for(:another_user).should == {:name => 'Mark Bates', :email => 'bob@example.com'}
+  Cobble.attributes_for(:yet_another_user).should == {:name => 'Mark Bates', :email => 0.123456789}
+</code></pre>
+
+h3. Defining a Cobbler:
+
+A cobbler is what actually builds your object(s). A cobble is fully defined by you, Cobble just helps to give you the proper attributes and options for your object.
+
+<pre><code>
+  Cobble.define(:user) do
+    User.new(options)
+  end
+  Cobble.define(:another_user) do
+    user = User.new(options)
+    user.url = 'http://www.metabates.com'
+    user
+  end
+  Cobble.define(:yet_another_user) do
+    User.new(options)
+  end
+  
+  # Test
+  
+  # build and save:
+  user = Cobble.user # or Cobble.create(:user)
+  user.name.should == 'Mark Bates'
+  user.should_not be_new_record
+  
+  # just build:
+  user = Cobble.build_user # or Cobble.build(:user)
+  user.name.should == 'Mark Bates'
+  user.should be_new_record
+  
+  # build and save:
+  user = Cobble.another_user # or Cobble.create(:another_user)
+  user.name.should == 'Mark Bates'
+  user.email.should == 'bob@example.com'
+  user.url.should == 'http://www.metabates.com'
+  user.should_not be_new_record
+  
+  # just build:
+  user = Cobble.build_another_user # or Cobble.build(:another_user)
+  user.name.should == 'Mark Bates'
+  user.email.should == 'bob@example.com'
+  user.url.should == 'http://www.metabates.com'
+  user.should be_new_record
+  
+  # build and save:
+  user = Cobble.another_user(:name => 'Bob Smith') # or Cobble.create(:another_user)
+  user.name.should == 'Bob Smith'
+  user.email.should == 'bob@example.com'
+  user.url.should == 'http://www.metabates.com'
+  user.should_not be_new_record
+  
+  # just build:
+  user = Cobble.build_another_user(:name => 'Bob Smith') # or Cobble.build(:another_user)
+  user.name.should == 'Bob Smith'
+  user.email.should == 'bob@example.com'
+  user.url.should == 'http://www.metabates.com'
+  user.should be_new_record
+</code></pre>
+
+Cobblers will try and use a matching set of attributes, if defined, as the basis for the options available to your cobbler. You can, of course, pass in different options at runtime to override these defaults.
