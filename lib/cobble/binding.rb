@@ -3,11 +3,13 @@ class Cobble
     attr_accessor :name
     attr_accessor :type
     attr_accessor :options
+    attr_accessor :built_options # :nodoc:
   
     def initialize(name, options = {}) # :nodoc:
       self.name = name
       self.type = :build
       self.options = {}
+      self.built_options = {}
       parse_options(options)
 
       self.attributes_for(name)
@@ -34,11 +36,14 @@ class Cobble
     end
   
     def method_missing(sym, *args, &block)
-      unless self.options[sym]
+      val = self.options.delete(sym) || self.built_options[sym]
+      unless val
         if block_given?
-          self.options[sym] = yield
+          val = yield
         end
       end
+      self.built_options[sym] = val
+      return val
     end
   
     private

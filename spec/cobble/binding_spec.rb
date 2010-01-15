@@ -100,7 +100,7 @@ describe Cobble::Binding do
           Cobble.user
         end
         person = Person.new
-        person.user = options[:user]
+        person.user = user
         person
       end
       
