@@ -100,7 +100,7 @@ describe Cobble::Binding do
           Cobble.user
         end
         person = Person.new
-        person.user = user
+        person.user = options[:user]
         person
       end
       
@@ -118,5 +118,36 @@ describe Cobble::Binding do
     end
     
   end
+  
+  # describe 'method_missing' do
+  #   
+  #   before(:each) do
+  #     Cobble.define_attributes(:person, :name => 'Mark Bates')
+  #     Cobble.define(:person) do
+  #       another_user {Cobble.user}
+  #       user do
+  #         user = Cobble.user(:another_user => another_user)
+  #         user
+  #       end
+  #       person = Person.new
+  #       person.user = user
+  #       person
+  #     end
+  #     
+  #     Cobble.define(:user) do
+  #       User.new(options)
+  #     end
+  #   end
+  #   
+  #   it 'should call another factory' do
+  #     person = Cobble.build_person
+  #     person.user.should be_kind_of(User)
+  #     person.user.attributes[:another_user].should be_kind_of(User)
+  #     
+  #     person = Cobble.person
+  #     person.user.should be_kind_of(User)
+  #   end
+  #   
+  # end
   
 end
