@@ -1,25 +1,41 @@
 class Cobble
+  # A registry for procs that can be called to generate random, or fake, data.
   class Fakes
     include Singleton
   
+    # List of all the fake procs in the system.
     attr_accessor :list
   
-    def initialize
+    def initialize # :nodoc:
       self.reset!
     end
   
-    def reset!
+    def reset! # :nodoc:
       self.list = {}
     end
   
+    # Add a new proc to the system.
+    # 
+    # Example:
+    #   Cobble::Fakes.add(:birth_date) {(rand(80) + 13).years.ago}
     def add(name, &block)
       self.list[name.to_sym] = block
     end
-  
+    
+    # Create an alias from one fake proc to another.
+    # 
+    # Example:
+    #   Cobble::Fakes.add(:birth_date) {(rand(80) + 13).years.ago}
+    #   Cobble::Fakes.alias(:birthday, :birth_date)
     def alias(from, to)
       self.list[from.to_sym] = Cobble::Fakes::Alias.new(to)
     end
   
+    # Executes the specified fake proc. Raise Cobble::Errors::NoFakeRegistered
+    # if the fake proc is not registered with the system.
+    # 
+    # Example:
+    #   Cobble::Fakes.execute(:email) # => 'bob@example.com'
     def execute(name, *args)
       block = self.list[name.to_sym]
       if block.is_a?(Cobble::Fakes::Alias)
@@ -32,13 +48,13 @@ class Cobble
     end
   
     class << self
-      def method_missing(sym, *args, &block)
+      def method_missing(sym, *args, &block) # :nodoc:
         Cobble::Fakes.instance.send(sym, *args, &block)
       end
     end # class << self
   
     private
-    class Alias
+    class Alias # :nodoc:
       attr_accessor :to
       def initialize(to)
         self.to = to
